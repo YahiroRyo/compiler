@@ -1,7 +1,9 @@
 use crate::strlib::code::Code;
+use std::process;
 
 pub fn error_msg(msg: &str) {
   println!("{}", msg);
+  process::exit(1);
 }
 pub fn strtoi(code: &mut Code) -> i64 {
   let mut r = String::new();

@@ -18,6 +18,6 @@ impl Code {
     self.chars[self.idx]
   }
   pub fn is_out(&mut self) -> bool {
-    self.chars.len() == self.idx
+    self.idx == self.chars.len()
   }
 }
