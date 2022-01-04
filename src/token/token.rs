@@ -1,6 +1,6 @@
 use crate::token::kind::TokenKind as TokenKind;
-use crate::strlib::code::Code;
 use crate::strlib::strl::{strtoi, error_msg};
+use crate::strlib::code::Code;
 
 pub struct TokenArray {
   pub tokens: Vec<TokenKind>,
