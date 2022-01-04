@@ -22,18 +22,27 @@ impl NodeArray {
     }
   }
   fn mul(&mut self, args: &mut ParseArgs) -> usize {
-    let mut index = self.primary(args);
+    let mut index = self.unary(args);
     loop {
       if args.tokens.consume("*") {
-        let rhs = self.primary(args);
+        let rhs = self.unary(args);
         index = self.new_node_usize(NodeKind::MUL, index, rhs);
       } else if args.tokens.consume("/") {
-        let rhs = self.primary(args);
+        let rhs = self.unary(args);
         index = self.new_node_usize(NodeKind::DIV, index, rhs);
       } else {
         return index;
       }
     }
+  }
+  fn unary(&mut self, args: &mut ParseArgs) -> usize {
+    if args.tokens.consume("+") {
+      return self.primary(args);
+    } else if args.tokens.consume("-") {
+      let rhs = self.primary(args);
+      return self.new_node(NodeKind::SUB, None, Some(rhs));
+    }
+    self.primary(args)
   }
   fn primary(&mut self, args: &mut ParseArgs) -> usize {
     if args.tokens.consume("(") {
