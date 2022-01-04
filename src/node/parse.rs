@@ -8,7 +8,7 @@ pub struct ParseArgs {
   pub lvars: LVarArray,
 }
 
-// stmt       = expr ";"
+// stmt       = expr ";" | "return" expr ";"
 // expr       = assign
 // assign     = equality ("=" assign)?
 // equality   = relational ("==" relational | "!=" relational)*
@@ -19,7 +19,14 @@ pub struct ParseArgs {
 // primary    = num | ident | "(" expr ")"
 impl NodeArray {
   pub fn stmt(&mut self, args: &mut ParseArgs) -> usize {
-    let idx = self.expr(args);
+    let idx;
+
+    if args.tokens.consume_return() {
+      let lhs = self.expr(args);
+      idx = self.new_node(NodeKind::RETURN, Some(lhs), None);
+    } else {
+      idx = self.expr(args);
+    }
     args.tokens.expect(";");
     idx
   }

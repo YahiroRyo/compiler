@@ -35,7 +35,15 @@ impl NodeArray {
         println!("  mov [rax], rdi");
         println!("  push rdi");
         return;
-      }
+      },
+      NodeKind::RETURN => {
+        self.gen(self.nodes[idx].lhs.unwrap());
+        println!("  pop rax");
+        println!("  mov rsp, rbp");
+        println!("  pop rbp");
+        println!("  ret");
+        return;
+      },
       _ => ()
     }
     self.gen(self.nodes[idx].lhs.unwrap());

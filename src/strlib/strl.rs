@@ -12,3 +12,9 @@ pub fn strtoi(code: &mut Code) -> i64 {
   }
   r.to_string().parse::<i64>().unwrap()
 }
+pub fn is_alnum(c: char) -> bool {
+  (c >= 'a' && c <= 'z') ||
+  (c >= 'A' && c <= 'Z') ||
+  (c >= '0' && c <= '9') ||
+  (c == '_')
+}

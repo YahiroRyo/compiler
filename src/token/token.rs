@@ -1,5 +1,5 @@
 use crate::token::kind::TokenKind as TokenKind;
-use crate::strlib::strl::{strtoi, error_msg};
+use crate::strlib::strl::{strtoi, is_alnum, error_msg};
 use crate::strlib::code::Code;
 
 pub struct TokenArray {
@@ -36,6 +36,15 @@ impl TokenArray {
       _ => ()
     }
     false
+  }
+  pub fn consume_return(&mut self) -> bool {
+    match self.kind() {
+      TokenKind::RETURN => {
+        self.idx += 1;
+        true
+      },
+      _ => false
+    }
   }
   pub fn consume_ident(&mut self) -> (bool, String) {
     match &self.tokens[self.idx] {
@@ -93,6 +102,12 @@ pub fn tokenize(code: &mut Code) -> TokenArray {
     if is_reserved {
       ret.new_token(TokenKind::RESERVED(reserved.clone()));
       code.idx += reserved.len();
+      continue;
+    }
+
+    if code.strcmp("return") && !is_alnum(code.chars[code.idx+6]) {
+      ret.new_token(TokenKind::RETURN);
+      code.idx += 6;
       continue;
     }
 

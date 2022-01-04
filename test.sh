@@ -44,4 +44,10 @@ bbb = 15;
 aa111 + bbb;
 "
 
+assert 5 "
+a = 2;
+b = 3;
+return a + b;
+"
+
 echo OK

@@ -59,4 +59,18 @@ impl Code {
     }
     r
   }
+  pub fn strcmp(&mut self, s: &str) -> bool {
+    let mut ret = true;
+    let tmp_s: Vec<char> = s.chars().collect();
+    if self.chars.len() <= self.idx + s.len() - 1 {
+      return false;
+    }
+    
+    for i in 0..s.len() {
+      if self.chars[self.idx + i] != tmp_s[i] {
+        ret = false;
+      }
+    }
+    ret
+  }
 }
