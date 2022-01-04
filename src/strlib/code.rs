@@ -1,5 +1,5 @@
 // 優先順位順
-const RESERVED_TERMS: [&'static str; 12] = [
+const RESERVED_TERMS: [&'static str; 14] = [
   "+",
   "-",
   "/",
@@ -12,6 +12,8 @@ const RESERVED_TERMS: [&'static str; 12] = [
   "==",
   "<",
   ">",
+  "=",
+  ";",
 ];
 
 pub struct Code {
@@ -37,15 +39,15 @@ impl Code {
     self.idx == self.chars.len()
   }
   pub fn is_reserved(&mut self) -> (bool, String) {
-    if self.chars.len() - self.idx >= 2 {
-      for term in RESERVED_TERMS {
-        let mut tmp_char: String = String::new();
-        for i in 0..term.len() {
-          tmp_char.push(self.chars[self.idx + i]);
-        }
-        if tmp_char == term {
-          return (true, String::from(term));
-        }
+    for term in RESERVED_TERMS {
+      if self.idx + term.len() - 1 == self.chars.len() { continue; }
+
+      let mut tmp_char: String = String::new();
+      for i in 0..term.len() {
+        tmp_char.push(self.chars[self.idx + i]);
+      }
+      if tmp_char == term {
+        return (true, String::from(term));
       }
     }
     (false, String::new())

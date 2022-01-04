@@ -6,16 +6,31 @@ pub struct ParseArgs {
   pub tokens: TokenArray
 }
 
-// expr       = equality
+// stmt       = expr ";"
+// expr       = assign
+// assign     = equality ("=" assign)?
 // equality   = relational ("==" relational | "!=" relational)*
 // relational = add ("<" add | "<=" add | ">" add | ">=" add)*
 // add        = mul ("+" mul | "-" mul)*
 // mul        = unary ("*" unary | "/" unary)*
 // unary      = ("+" | "-")? primary
-// primary    = num | "(" expr ")"
+// primary    = num | ident | "(" expr ")"
 impl NodeArray {
-  pub fn expr(&mut self, args: &mut ParseArgs) -> usize {
-    self.equality(args)
+  pub fn stmt(&mut self, args: &mut ParseArgs) -> usize {
+    let idx = self.expr(args);
+    args.tokens.expect(";");
+    idx
+  }
+  fn expr(&mut self, args: &mut ParseArgs) -> usize {
+    self.assign(args)
+  }
+  fn assign(&mut self, args: &mut ParseArgs) -> usize {
+    let mut idx = self.equality(args);
+    if args.tokens.consume("=") {
+      let rhs = self.assign(args);
+      idx = self.new_node_usize(NodeKind::ASSIGN, idx, rhs);
+    }
+    idx
   }
   fn equality(&mut self, args: &mut ParseArgs) -> usize {
     let mut idx = self.relational(args);
@@ -96,6 +111,13 @@ impl NodeArray {
       args.tokens.expect(")");
       return index;
     }
+    
+    let (is_var, var_name) = args.tokens.consume_ident();
+    if is_var {
+      let offset = 8;
+      return self.new_node(NodeKind::LVAR(offset), None, None);
+    }
+
     self.new_node_num(args.tokens.expect_number())
   }
 }

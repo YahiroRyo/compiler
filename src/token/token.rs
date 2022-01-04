@@ -37,6 +37,17 @@ impl TokenArray {
     }
     false
   }
+  pub fn consume_ident(&mut self) -> (bool, String) {
+    match &self.tokens[self.idx] {
+      TokenKind::IDENT (s) => {
+        self.idx += 1;
+        (true, s.to_string())
+      },
+      _ => {
+        (false, String::new())
+      }
+    }
+  }
   pub fn expect_number(&mut self) -> i64 {
     match *self.kind() {
       TokenKind::NUM (n) => {
@@ -83,6 +94,11 @@ pub fn tokenize(code: &mut Code) -> TokenArray {
     if is_reserved {
       ret.new_token(TokenKind::RESERVED(reserved.clone()));
       code.idx += reserved.len();
+      continue;
+    }
+
+    if code.c() >= 'a' && code.c() <= 'z' {
+      ret.new_token(TokenKind::IDENT(String::from(code.next())));
       continue;
     }
 
