@@ -6,6 +6,13 @@ pub struct ParseArgs {
   pub tokens: TokenArray
 }
 
+// expr       = equality
+// equality   = relational ("==" relational | "!=" relational)*
+// relational = add ("<" add | "<=" add | ">" add | ">=" add)*
+// add        = mul ("+" mul | "-" mul)*
+// mul        = unary ("*" unary | "/" unary)*
+// unary      = ("+" | "-")? primary
+// primary    = num | "(" expr ")"
 impl NodeArray {
   pub fn expr(&mut self, args: &mut ParseArgs) -> usize {
     let mut index = self.mul(args);
@@ -39,8 +46,9 @@ impl NodeArray {
     if args.tokens.consume("+") {
       return self.primary(args);
     } else if args.tokens.consume("-") {
+      let lhs = self.new_node_num(0);
       let rhs = self.primary(args);
-      return self.new_node(NodeKind::SUB, None, Some(rhs));
+      return self.new_node_usize(NodeKind::SUB, lhs, rhs);
     }
     self.primary(args)
   }
