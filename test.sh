@@ -50,4 +50,33 @@ b = 3;
 return a + b;
 "
 
+assert 10 "
+a = 10;
+if (a == 10) a;
+"
+
+assert 10 "
+a = 10;
+b = 2;
+if (a == 10) a;
+else b;
+"
+assert 2 "
+a = 10;
+b = 2;
+if (a != 10) a;
+else b;
+"
+assert 10 "
+a = 0;
+while (a != 10) a = a + 1;
+a;
+"
+assert 9 "
+for (i = 0; i < 9; i = i + 1) i;
+"
+assert 111 "
+foo = 0;
+for (i = 0; i < 111; i = i + 1) foo;
+"
 echo OK

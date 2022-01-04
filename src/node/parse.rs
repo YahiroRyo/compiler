@@ -8,7 +8,11 @@ pub struct ParseArgs {
   pub lvars: LVarArray,
 }
 
-// stmt       = expr ";" | "return" expr ";"
+// stmt       = expr ";"
+//            | "if" "(" expr ")" stmt ("else" stmt)?
+//            | "while" "(" expr ")" stmt
+//            | "for" "(" expr? ";" expr? ";" expr? ")" stmt
+//            | "return" expr ";"
 // expr       = assign
 // assign     = equality ("=" assign)?
 // equality   = relational ("==" relational | "!=" relational)*
@@ -21,6 +25,61 @@ impl NodeArray {
   pub fn stmt(&mut self, args: &mut ParseArgs) -> usize {
     let idx;
 
+    if args.tokens.consume("if") {
+      args.tokens.expect("(");
+      let if_lhs = self.expr(args);
+      args.tokens.expect(")");
+      let if_rhs = self.stmt(args);
+      let lhs = self.new_node_usize(NodeKind::NONE, if_lhs, if_rhs);
+      if args.tokens.consume("else") {
+        let else_lhs = self.stmt(args);
+        let rhs = self.new_node_usize(NodeKind::ELSE, else_lhs, 0);
+        return self.new_node_usize(NodeKind::IF, lhs, rhs);
+      }
+      return self.new_node(NodeKind::IF, Some(lhs), None);
+    }
+
+    if args.tokens.consume("while") {
+      args.tokens.expect("(");
+      let lhs = self.expr(args);
+      args.tokens.expect(")");
+      let rhs = self.stmt(args);
+      return self.new_node_usize(NodeKind::WHILE, lhs, rhs);
+    }
+
+    if args.tokens.consume("while") {
+      args.tokens.expect("(");
+      let lhs = self.expr(args);
+      args.tokens.expect(")");
+      let rhs = self.stmt(args);
+      return self.new_node_usize(NodeKind::WHILE, lhs, rhs);
+    }
+
+    if args.tokens.consume("for") {
+      args.tokens.expect("(");
+      let mut lhs: Option<usize> = None;
+      let mut mhs: Option<usize> = None;
+      let mut rhs: Option<usize> = None;
+      let stmt: usize;
+      if !args.tokens.consume(";") {
+        lhs = Some(self.expr(args));
+        args.tokens.idx += 1;
+      }
+      if !args.tokens.consume(";") {
+        mhs = Some(self.expr(args));
+        args.tokens.idx += 1;
+      }
+      if !args.tokens.consume(")") {
+        rhs = Some(self.expr(args));
+      }
+      args.tokens.expect(")");
+      stmt = self.stmt(args);
+
+      let while_lhs = self.new_node(NodeKind::NONE, lhs, mhs);
+      let while_rhs = self.new_node(NodeKind::NONE, rhs, Some(stmt));
+      return self.new_node_usize(NodeKind::FOR, while_lhs, while_rhs);
+    }
+    
     if args.tokens.consume_return() {
       let lhs = self.expr(args);
       idx = self.new_node(NodeKind::RETURN, Some(lhs), None);

@@ -110,6 +110,26 @@ pub fn tokenize(code: &mut Code) -> TokenArray {
       code.idx += 6;
       continue;
     }
+    if code.strcmp("if") {
+      ret.new_token(TokenKind::RESERVED(String::from("if")));
+      code.idx += 2;
+      continue;
+    }
+    if code.strcmp("else") {
+      ret.new_token(TokenKind::RESERVED(String::from("else")));
+      code.idx += 4;
+      continue;
+    }
+    if code.strcmp("while") {
+      ret.new_token(TokenKind::RESERVED(String::from("while")));
+      code.idx += 5;
+      continue;
+    }
+    if code.strcmp("for") {
+      ret.new_token(TokenKind::RESERVED(String::from("for")));
+      code.idx += 3;
+      continue;
+    }
 
     if code.c().is_digit(10) {
       ret.new_token(TokenKind::NUM(strtoi(code)));

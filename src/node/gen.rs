@@ -44,6 +44,59 @@ impl NodeArray {
         println!("  ret");
         return;
       },
+      NodeKind::IF => {
+        let if_idx = self.nodes[idx].lhs.unwrap();
+        self.gen(self.nodes[if_idx].lhs.unwrap());
+        println!("  pop rax");
+        println!("  cmp rax, 0");
+        if self.nodes[idx].rhs != None {
+          println!("  je .LelseXXX");
+          self.gen(self.nodes[if_idx].rhs.unwrap());
+          println!("  jmp .LendXXX");
+          println!(".LelseXXX:");
+          let else_idx = self.nodes[idx].rhs.unwrap();
+          self.gen(self.nodes[else_idx].lhs.unwrap());
+        } else {
+          println!("  je .LendXXX");
+          self.gen(self.nodes[if_idx].rhs.unwrap());
+        }
+        println!(".LendXXX:");
+        return;
+      },
+      NodeKind::WHILE => {
+        println!(".LbeginXXX:");
+        self.gen(self.nodes[idx].lhs.unwrap());
+        println!("  pop rax");
+        println!("  cmp rax, 0");
+        println!("  je .LendXXX");
+        self.gen(self.nodes[idx].rhs.unwrap());
+        println!("  jmp .LbeginXXX");
+        println!(".LendXXX:");
+        return;
+      },
+      NodeKind::FOR => {
+        let lhs = self.nodes[idx].lhs.unwrap();
+        let rhs = self.nodes[idx].rhs.unwrap();
+        if self.nodes[lhs].lhs != None {
+          self.gen(self.nodes[lhs].lhs.unwrap());
+        }
+        println!(".LbeginXXX:");
+        if self.nodes[lhs].rhs != None {
+          self.gen(self.nodes[lhs].rhs.unwrap());
+        }
+        println!("  pop rax");
+        println!("  cmp rax, 0");
+        println!("  je .LendXXX");
+        self.gen(self.nodes[rhs].rhs.unwrap());
+        if self.nodes[rhs].lhs != None {
+          self.gen(self.nodes[rhs].lhs.unwrap());
+        }
+        println!("  jmp .LbeginXXX");
+        println!(".LendXXX:");
+        return;
+      },
+      NodeKind::ELSE => return,
+      NodeKind::NONE => return,
       _ => ()
     }
     self.gen(self.nodes[idx].lhs.unwrap());
