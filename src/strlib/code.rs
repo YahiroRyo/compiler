@@ -1,3 +1,12 @@
+const RESERVED_TERMS: [&'static str; 6] = [
+  "+",
+  "-",
+  "/",
+  "*",
+  "(",
+  ")",
+];
+
 pub struct Code {
   pub chars: Vec<char>,
   pub idx: usize,
@@ -19,5 +28,17 @@ impl Code {
   }
   pub fn is_out(&mut self) -> bool {
     self.idx == self.chars.len()
+  }
+  pub fn is_reserved(&mut self) -> bool {
+    for term in RESERVED_TERMS {
+      let mut tmp_char: String = String::new();
+      for i in 0..term.len() {
+        tmp_char.push(self.chars[self.idx + i]);
+      }
+      if tmp_char == term {
+        return true;
+      }
+    }
+    false
   }
 }

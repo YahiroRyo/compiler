@@ -79,7 +79,7 @@ pub fn tokenize(code: &mut Code) -> TokenArray {
       continue;
     }
     
-    if code.c() == '+' || code.c() == '-' {
+    if code.is_reserved() {
       ret.new_token(TokenKind::RESERVED(String::from(code.next())));
       continue;
     }

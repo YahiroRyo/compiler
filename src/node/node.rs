@@ -1,13 +1,15 @@
 use crate::node::kind::NodeKind as NodeKind;
 
+#[derive(Clone)]
 pub struct Node {
-  kind: NodeKind,
-  lhs: Option<usize>,
-  rhs: Option<usize>,
+  pub kind: NodeKind,
+  pub lhs: Option<usize>,
+  pub rhs: Option<usize>,
 }
+#[derive(Clone)]
 pub struct NodeArray {
-  nodes: Vec<Node>,
-  idx: usize,
+  pub nodes: Vec<Node>,
+  pub idx: usize,
 }
 impl NodeArray {
   pub fn new_node(&mut self, kind: NodeKind, lhs: Option<usize>, rhs: Option<usize>) -> usize {

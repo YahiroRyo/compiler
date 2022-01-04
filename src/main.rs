@@ -5,28 +5,29 @@ mod node;
 
 use std::env;
 use strlib::code::Code;
-use token::token::{tokenize, TokenArray};
+use node::node::NodeArray;
+use node::parse::ParseArgs;
 use middleware::filter::middleware;
+use token::token::{tokenize, TokenArray};
 
 fn main() {
 	let args: Vec<String> = env::args().collect();
 	middleware(args.clone());
 	let mut code: Code = Code::new(args[1].chars().collect());
-	let mut token: TokenArray = tokenize(&mut code);
+	let token: TokenArray = tokenize(&mut code);
+	let mut parse_args = ParseArgs { tokens: token };
+	let mut nodes = NodeArray {
+		nodes: Vec::new(),
+		idx: 0,
+	};
+	nodes.expr(&mut parse_args);
 
 	println!(".intel_syntax noprefix");
 	println!(".globl main");
 	println!("main:");
-	println!("  mov rax, {}", token.expect_number());
 
-	while !token.is_eof() {
-		if token.consume("+") {
-			println!("  add rax, {}", token.expect_number());
-			continue;
-		}
-		
-		token.expect("-");
-		println!("  sub rax, {}", token.expect_number());
-	}
+	nodes.gen(nodes.nodes.len()-1);
+	
+	println!("  pop rax");
 	println!("  ret");
 }
