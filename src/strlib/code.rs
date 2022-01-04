@@ -52,4 +52,11 @@ impl Code {
     }
     (false, String::new())
   }
+  pub fn take_ident(&mut self) -> String {
+    let mut r = String::new();
+    while !self.is_out() && ((self.c() >= 'a' && self.c() <= 'z') || self.c().is_digit(10))  {
+      r.push(self.next());
+    }
+    r
+  }
 }

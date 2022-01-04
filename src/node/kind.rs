@@ -9,6 +9,6 @@ pub enum NodeKind {
   LE,
   LT,
   ASSIGN,
-  LVAR(i64),
+  LVAR(usize),
   NUM(i64),
 }

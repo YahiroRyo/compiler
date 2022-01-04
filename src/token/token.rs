@@ -11,13 +11,13 @@ impl TokenArray {
   fn new_token(&mut self, kind: TokenKind) {
     self.tokens.push(kind)
   }
-  fn kind(&mut self) -> &TokenKind {
-    &self.tokens[self.idx]
-  }
   fn next(&mut self) -> &TokenKind {
     let tmp = &self.tokens[self.idx];
     self.idx += 1;
     tmp
+  }
+  pub fn kind(&mut self) -> &TokenKind {
+    &self.tokens[self.idx]
   }
   pub fn is_eof(&mut self) -> bool {
     match self.kind() {
@@ -40,7 +40,6 @@ impl TokenArray {
   pub fn consume_ident(&mut self) -> (bool, String) {
     match &self.tokens[self.idx] {
       TokenKind::IDENT (s) => {
-        self.idx += 1;
         (true, s.to_string())
       },
       _ => {
@@ -97,13 +96,13 @@ pub fn tokenize(code: &mut Code) -> TokenArray {
       continue;
     }
 
-    if code.c() >= 'a' && code.c() <= 'z' {
-      ret.new_token(TokenKind::IDENT(String::from(code.next())));
+    if code.c().is_digit(10) {
+      ret.new_token(TokenKind::NUM(strtoi(code)));
       continue;
     }
 
-    if code.c().is_digit(10) {
-      ret.new_token(TokenKind::NUM(strtoi(code)));
+    if code.c() >= 'a' && code.c() <= 'z' {
+      ret.new_token(TokenKind::IDENT(code.take_ident()));
       continue;
     }
 

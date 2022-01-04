@@ -1,9 +1,11 @@
-use crate::node::kind::NodeKind as NodeKind;
+use crate::node::kind::NodeKind;
+use crate::lvar::lvar::LVarArray;
 use crate::node::node::{NodeArray};
 use crate::token::token::TokenArray;
 
 pub struct ParseArgs {
-  pub tokens: TokenArray
+  pub tokens: TokenArray,
+  pub lvars: LVarArray,
 }
 
 // stmt       = expr ";"
@@ -111,11 +113,22 @@ impl NodeArray {
       args.tokens.expect(")");
       return index;
     }
-    
     let (is_var, var_name) = args.tokens.consume_ident();
     if is_var {
-      let offset = 8;
-      return self.new_node(NodeKind::LVAR(offset), None, None);
+      let (is_exist, offset) = args.lvars.find_lvar(&mut args.tokens);
+      args.tokens.idx += 1;
+      if is_exist {
+        return self.new_node(NodeKind::LVAR(offset), None, None);
+      } else {
+        let offset;
+        if args.lvars.lvars.len() == 0 {
+          offset = 8;
+        } else {
+          offset = args.lvars.lvars[args.lvars.lvars.len() - 1].offset + 8;
+        }
+        args.lvars.new_lvar(var_name, offset);
+        return self.new_node(NodeKind::LVAR(offset), None, None);
+      }
     }
 
     self.new_node_num(args.tokens.expect_number())

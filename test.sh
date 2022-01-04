@@ -33,5 +33,15 @@ assert 1 "1 <= 1;"
 assert 1 "1 == 1;"
 assert 0 "1 != 1;"
 assert 5 "a = 5; a;"
+assert 20 "
+aa = 5;
+bbb = 15;
+aa + bbb;
+"
+assert 20 "
+aa111 = 5;
+bbb = 15;
+aa111 + bbb;
+"
 
 echo OK
