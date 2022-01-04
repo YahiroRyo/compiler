@@ -15,6 +15,44 @@ pub struct ParseArgs {
 // primary    = num | "(" expr ")"
 impl NodeArray {
   pub fn expr(&mut self, args: &mut ParseArgs) -> usize {
+    self.equality(args)
+  }
+  fn equality(&mut self, args: &mut ParseArgs) -> usize {
+    let mut idx = self.relational(args);
+    loop {
+      if args.tokens.consume("==") {
+        let rhs = self.relational(args);
+        idx = self.new_node_usize(NodeKind::EQ, idx, rhs);
+      } else if args.tokens.consume("!=") {
+        let rhs = self.relational(args);
+        idx = self.new_node_usize(NodeKind::NE, idx, rhs);
+      } else {
+        return idx;
+      }
+    }
+  }
+  fn relational(&mut self, args: &mut ParseArgs) -> usize {
+    let mut idx = self.add(args);
+
+    loop {
+      if args.tokens.consume("<") {
+        let rhs = self.add(args);
+        idx = self.new_node_usize(NodeKind::LT, idx, rhs);
+      } else if args.tokens.consume("<=") {
+        let rhs = self.add(args);
+        idx = self.new_node_usize(NodeKind::LE, idx, rhs);
+      } else if args.tokens.consume(">") {
+        let lhs = self.add(args);
+        idx = self.new_node_usize(NodeKind::LT, lhs, idx);
+      } else if args.tokens.consume(">=") {
+        let lhs = self.add(args);
+        idx = self.new_node_usize(NodeKind::LE, lhs, idx);
+      } else {
+        return idx;
+      }
+    }
+  }
+  fn add(&mut self, args: &mut ParseArgs) -> usize {
     let mut index = self.mul(args);
     loop {
       if args.tokens.consume("+") {

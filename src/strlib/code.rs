@@ -1,10 +1,17 @@
-const RESERVED_TERMS: [&'static str; 6] = [
+// 優先順位順
+const RESERVED_TERMS: [&'static str; 12] = [
   "+",
   "-",
   "/",
   "*",
   "(",
   ")",
+  "<=",
+  ">=",
+  "!=",
+  "==",
+  "<",
+  ">",
 ];
 
 pub struct Code {
@@ -29,16 +36,18 @@ impl Code {
   pub fn is_out(&mut self) -> bool {
     self.idx == self.chars.len()
   }
-  pub fn is_reserved(&mut self) -> bool {
-    for term in RESERVED_TERMS {
-      let mut tmp_char: String = String::new();
-      for i in 0..term.len() {
-        tmp_char.push(self.chars[self.idx + i]);
-      }
-      if tmp_char == term {
-        return true;
+  pub fn is_reserved(&mut self) -> (bool, String) {
+    if self.chars.len() - self.idx >= 2 {
+      for term in RESERVED_TERMS {
+        let mut tmp_char: String = String::new();
+        for i in 0..term.len() {
+          tmp_char.push(self.chars[self.idx + i]);
+        }
+        if tmp_char == term {
+          return (true, String::from(term));
+        }
       }
     }
-    false
+    (false, String::new())
   }
 }

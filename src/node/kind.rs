@@ -4,5 +4,9 @@ pub enum NodeKind {
   SUB,
   MUL,
   DIV,
+  EQ,
+  NE,
+  LE,
+  LT,
   NUM(i64),
 }

@@ -79,8 +79,10 @@ pub fn tokenize(code: &mut Code) -> TokenArray {
       continue;
     }
     
-    if code.is_reserved() {
-      ret.new_token(TokenKind::RESERVED(String::from(code.next())));
+    let (is_reserved, reserved) = code.is_reserved();
+    if is_reserved {
+      ret.new_token(TokenKind::RESERVED(reserved.clone()));
+      code.idx += reserved.len();
       continue;
     }
 

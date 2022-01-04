@@ -26,5 +26,11 @@ assert 11 "(11 * 2) / 2"
 assert 31 "((11 * 2) / 2) + 20" 
 assert 42 "11 - -31" 
 assert 20 "51 + -31" 
+assert 0 "1 > 1"
+assert 1 "1 >= 1"
+assert 0 "1 < 1"
+assert 1 "1 <= 1"
+assert 1 "1 == 1"
+assert 0 "1 != 1"
 
 echo OK

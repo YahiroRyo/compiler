@@ -10,7 +10,6 @@ impl NodeArray {
       },
       _ => ()
     }
-
     self.gen(self.nodes[idx].lhs.unwrap());
     self.gen(self.nodes[idx].rhs.unwrap());
 
@@ -22,6 +21,26 @@ impl NodeArray {
       NodeKind::SUB => println!("  sub rax, rdi"),
       NodeKind::MUL => println!("  imul rax, rdi"),
       NodeKind::DIV => { println!("  cqo"); println!("  idiv rdi") },
+      NodeKind::EQ => {
+        println!("  cmp rax, rdi");
+        println!("  sete al");
+        println!("  movzb rax, al");
+      },
+      NodeKind::NE => {
+        println!("  cmp rax, rdi");
+        println!("  setne al");
+        println!("  movzb rax, al");
+      },
+      NodeKind::LT => {
+        println!("  cmp rax, rdi");
+        println!("  setl al");
+        println!("  movzb rax, al");
+      },
+      NodeKind::LE => {
+        println!("  cmp rax, rdi");
+        println!("  setle al");
+        println!("  movzb rax, al");
+      },
       _ => ()
     }
     println!("  push rax");
