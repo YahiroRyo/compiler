@@ -88,4 +88,15 @@ for (i = 0; i < 10; i = i + 1) {
 }
 foo;
 "
+
+assert 15 "
+foo = 0;
+while (foo <= 10) {
+  foo = foo + 1;
+  if (foo == 5) {
+    foo = 15;
+  }
+}
+foo;
+"
 echo OK

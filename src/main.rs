@@ -24,6 +24,8 @@ fn main() {
 		}
 	};
 	let mut nodes: Vec<NodeArray> = Vec::new();
+	let mut cnt: i64 = 0;
+	
 	while !parse_args.tokens.is_eof() {
 		let mut node = NodeArray {
 			nodes: Vec::new(),
@@ -41,7 +43,7 @@ fn main() {
 	println!("  sub rsp, 208");
 
 	for mut node in nodes {
-		node.gen(node.nodes.len()-1);
+		node.gen(node.nodes.len()-1, &mut cnt);
 
 		println!("  pop rax");
 	}
