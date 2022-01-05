@@ -118,8 +118,8 @@ impl NodeArray {
       }
       if !args.tokens.consume(")") {
         rhs = Some(self.expr(args));
+        args.tokens.expect(")");
       }
-      args.tokens.expect(")");
       stmt = self.stmt(args);
 
       let while_lhs = self.new_node(NodeKind::NONE, lhs, mhs);

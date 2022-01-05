@@ -98,10 +98,10 @@ impl NodeArray {
         println!(".Lbegin{}:", tmp_cnt);
         if self.nodes[lhs].rhs != None {
           self.gen(self.nodes[lhs].rhs.unwrap(), cnt);
+          println!("  pop rax");
+          println!("  cmp rax, 0");
+          println!("  je .Lend{}", tmp_cnt);
         }
-        println!("  pop rax");
-        println!("  cmp rax, 0");
-        println!("  je .Lend{}", tmp_cnt);
         self.gen(self.nodes[rhs].rhs.unwrap(), cnt);
         if self.nodes[rhs].lhs != None {
           self.gen(self.nodes[rhs].lhs.unwrap(), cnt);
