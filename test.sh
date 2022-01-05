@@ -114,4 +114,11 @@ main() {
   return 0;
 }
 " true
+assert 0123456789 "
+main() {
+  for (i = 0; i < 10; i = i + 1) {
+    print(i);
+  }
+}
+" true
 echo OK
