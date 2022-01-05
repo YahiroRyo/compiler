@@ -105,4 +105,13 @@ main() {
   print(48);
 }
 " true
+assert 100 "
+test() {
+  print(100);
+}
+main() {
+  test();
+  return 0;
+}
+" true
 echo OK
