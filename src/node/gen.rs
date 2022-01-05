@@ -111,8 +111,8 @@ impl NodeArray {
         return;
       },
       NodeKind::BLOCK (r) => {
-        if r.from == 0 { return; }
-        for index in r.from..r.to+1 {
+        if r.from == None { return; }
+        for index in r.from.unwrap()..r.to.unwrap()+1 {
           self.gen(index, cnt);
         }
         return;
@@ -120,11 +120,11 @@ impl NodeArray {
       NodeKind::CALL (c) => {
         *cnt += 1;
         let tmp_cnt = cnt.clone();
-        if c.range.from != 0 {
-          for index in c.range.from..c.range.to+1 {
+        if c.range.from != None {
+          for index in c.range.from.unwrap()..c.range.to.unwrap()+1 {
             self.gen(index, cnt);
           }
-          for index in 0..c.range.to - c.range.from + 1 {
+          for index in 0..c.range.to.unwrap() - c.range.from.unwrap() + 1 {
             println!("  pop {}", FUNC_ARG_REGISTERS[index]);
           }
         }

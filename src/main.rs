@@ -1,5 +1,6 @@
-mod strlib;
+mod build_in_funcs;
 mod middleware;
+mod strlib;
 mod token;
 mod node;
 mod lvar;
@@ -9,8 +10,9 @@ use strlib::code::Code;
 use node::node::NodeArray;
 use node::parse::ParseArgs;
 use lvar::lvar::LVarArray;
-use token::token::{tokenize, TokenArray};
 use middleware::filter::middleware;
+use build_in_funcs::func::BuildInFuncs;
+use token::token::{tokenize, TokenArray};
 
 fn main() {
 	let args: Vec<String> = env::args().collect();
@@ -38,6 +40,8 @@ fn main() {
 	println!(".intel_syntax noprefix");
 	println!(".globl main");
 
+	BuildInFuncs::funcs();
+	
 	for mut node in nodes {
 		node.gen(node.nodes.len()-1, &mut cnt);
 	}

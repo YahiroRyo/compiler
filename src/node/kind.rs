@@ -1,7 +1,7 @@
 #[derive(Clone)]
 pub struct Range {
-  pub from: usize,
-  pub to: usize,
+  pub from: Option<usize>,
+  pub to: Option<usize>,
 }
 #[derive(Clone)]
 pub struct Call {

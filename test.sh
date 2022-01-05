@@ -3,20 +3,27 @@ assert() {
   echo "==========================================================================="
   expected="$1"
   input="$2"
+  is_write="$3"
 
   cargo run "$input" > tmp.s
-  cc -o tmp tmp.s
-  ./tmp
+  cc -no-pie -o tmp tmp.s
+  result=$(./tmp)
   actual="$?"
 
-  if [ "$actual" = "$expected" ]; then
+  if [ "$is_write" == "true" ]; then
+    if [ "$result" = "$expected" ]; then
+      echo "$input => $result"
+    else
+      echo "$input => $expected expected, but got $result"
+      exit 1
+    fi
+  elif [ "$actual" = "$expected" ]; then
     echo "$input => $actual"
   else
     echo "$input => $expected expected, but got $actual"
     exit 1
   fi
 }
-
 assert 0 "main() { return 0; }"
 assert 42 "main() { return 42; }"
 assert 44 "main() { return 42+2; }"
@@ -93,4 +100,9 @@ while (foo <= 10) {
 }
 return foo;
 }"
+assert 48 "
+main() {
+  print(48);
+}
+" true
 echo OK

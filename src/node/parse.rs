@@ -57,8 +57,8 @@ impl NodeArray {
     if args.tokens.consume("{") {
       if args.tokens.consume("}") {
         return self.new_node(NodeKind::BLOCK(Range{
-          from: 0,
-          to: 0
+          from: None,
+          to: None
         }), None, None);
       }
       let from: usize = self.stmt(args);
@@ -67,8 +67,8 @@ impl NodeArray {
         to = self.stmt(args);
       }
       return self.new_node(NodeKind::BLOCK(Range{
-        from,
-        to
+        from: Some(from),
+        to: Some(to)
       }), None, None);
     }
 
@@ -233,8 +233,8 @@ impl NodeArray {
         if args.tokens.consume(")") {
           return self.new_node(NodeKind::CALL(Call {
             range: Range {
-              from: 0,
-              to: 0,
+              from: None,
+              to: None,
             },
             name: format!("{}", var_name),
           }), None, None);
@@ -248,8 +248,8 @@ impl NodeArray {
         }
         return self.new_node(NodeKind::CALL(Call {
           range: Range {
-            from,
-            to,
+            from: Some(from),
+            to: Some(to),
           },
           name: format!("{}", var_name),
         }), None, None);
