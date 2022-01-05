@@ -117,13 +117,26 @@ impl NodeArray {
         return;
       },
       NodeKind::FUNC (f) => {
+        *cnt += 1;
+        let tmp_cnt = cnt.clone();
         for index in f.range.from..f.range.to+1 {
           self.gen(index, cnt);
         }
         for index in 0..f.range.to - f.range.from + 1 {
           println!("  pop {}", FUNC_ARG_REGISTERS[index]);
         }
+        println!("  mov rax, rsp");
+        println!("  and rax, 15");
+        println!("  jnz .Lcall{}", tmp_cnt);
+        println!("  mov rax, 0");
         println!("  call {}", f.name);
+        println!("  jmp .Lend{}", tmp_cnt);
+        println!(".Lcall{}:", tmp_cnt);
+        println!("  sub rsp, 8");
+        println!("  mov rax, 0");
+        println!("  call {}", f.name);
+        println!("  add rsp, 8");
+        println!(".Lend{}", tmp_cnt);
         return;
       }
       NodeKind::ELSE => return,
