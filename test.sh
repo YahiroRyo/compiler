@@ -99,4 +99,5 @@ while (foo <= 10) {
 }
 foo;
 "
+assert 1 "a(1);"
 echo OK

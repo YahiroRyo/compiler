@@ -1,5 +1,5 @@
 // 優先順位順
-const RESERVED_TERMS: [&'static str; 16] = [
+const RESERVED_TERMS: [&'static str; 17] = [
   "+",
   "-",
   "/",
@@ -16,6 +16,7 @@ const RESERVED_TERMS: [&'static str; 16] = [
   ";",
   "{",
   "}",
+  ",",
 ];
 
 pub struct Code {

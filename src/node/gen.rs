@@ -2,6 +2,15 @@ use crate::node::node::NodeArray as NodeArray;
 use crate::node::kind::NodeKind as NodeKind;
 use crate::strlib::strl::error_msg;
 
+const FUNC_ARG_REGISTERS: [&'static str; 6] = [
+  "rdi",
+  "rsi",
+  "rdx",
+  "rcx",
+  "r8",
+  "r9",
+];
+
 impl NodeArray {
   fn gen_lval(&mut self, idx: usize) {
     match self.nodes[idx].kind {
@@ -14,7 +23,7 @@ impl NodeArray {
     }
   }
   pub fn gen(&mut self, idx: usize, cnt: &mut i64) {
-    match self.nodes[idx].kind {
+    match self.nodes[idx].kind.clone() {
       NodeKind::NUM(n) => {
         println!("  push {}", n);
         return;
@@ -101,12 +110,22 @@ impl NodeArray {
         println!(".Lend{}:", tmp_cnt);
         return;
       },
-      NodeKind::BLOCK (from, to) => {
-        for index in from..to+1 {
+      NodeKind::BLOCK (r) => {
+        for index in r.from..r.to+1 {
           self.gen(index, cnt);
         }
         return;
       },
+      NodeKind::FUNC (f) => {
+        for index in f.range.from..f.range.to+1 {
+          self.gen(index, cnt);
+        }
+        for index in 0..f.range.to - f.range.from + 1 {
+          println!("  pop {}", FUNC_ARG_REGISTERS[index]);
+        }
+        println!("  call {}", f.name);
+        return;
+      }
       NodeKind::ELSE => return,
       NodeKind::NONE => return,
       _ => ()

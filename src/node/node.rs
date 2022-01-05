@@ -6,7 +6,6 @@ pub struct Node {
   pub lhs: Option<usize>,
   pub rhs: Option<usize>,
 }
-#[derive(Clone)]
 pub struct NodeArray {
   pub nodes: Vec<Node>,
   pub idx: usize,

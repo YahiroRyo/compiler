@@ -11,11 +11,6 @@ impl TokenArray {
   fn new_token(&mut self, kind: TokenKind) {
     self.tokens.push(kind)
   }
-  fn next(&mut self) -> &TokenKind {
-    let tmp = &self.tokens[self.idx];
-    self.idx += 1;
-    tmp
-  }
   pub fn kind(&mut self) -> &TokenKind {
     &self.tokens[self.idx]
   }
@@ -49,6 +44,7 @@ impl TokenArray {
   pub fn consume_ident(&mut self) -> (bool, String) {
     match &self.tokens[self.idx] {
       TokenKind::IDENT (s) => {
+        self.idx += 1;
         (true, s.to_string())
       },
       _ => {

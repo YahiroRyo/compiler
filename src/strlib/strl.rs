@@ -3,7 +3,7 @@ use std::process;
 
 pub fn error_msg(msg: &str) {
   println!("{}", msg);
-  process::exit(1);
+  process::exit(0x0100);
 }
 pub fn strtoi(code: &mut Code) -> i64 {
   let mut r = String::new();

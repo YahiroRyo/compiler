@@ -2,6 +2,7 @@ use crate::node::kind::NodeKind;
 use crate::lvar::lvar::LVarArray;
 use crate::node::node::{NodeArray};
 use crate::token::token::TokenArray;
+use crate::node::kind::{Func, Range};
 
 pub struct ParseArgs {
   pub tokens: TokenArray,
@@ -21,7 +22,9 @@ pub struct ParseArgs {
 // add        = mul ("+" mul | "-" mul)*
 // mul        = unary ("*" unary | "/" unary)*
 // unary      = ("+" | "-")? primary
-// primary    = num | ident | "(" expr ")"
+// primary    = num
+//            | ident ("(" expr?* ")")?
+//            | "(" expr ")"
 impl NodeArray {
   pub fn stmt(&mut self, args: &mut ParseArgs) -> usize {
     let idx;
@@ -32,7 +35,10 @@ impl NodeArray {
       while !args.tokens.consume("}") {
         to = self.stmt(args);
       }
-      return self.new_node(NodeKind::BLOCK(from, to), None, None);
+      return self.new_node(NodeKind::BLOCK(Range{
+        from,
+        to
+      }), None, None);
     }
 
     if args.tokens.consume("if") {
@@ -191,19 +197,42 @@ impl NodeArray {
     }
     let (is_var, var_name) = args.tokens.consume_ident();
     if is_var {
-      let (is_exist, offset) = args.lvars.find_lvar(&mut args.tokens);
-      args.tokens.idx += 1;
-      if is_exist {
-        return self.new_node(NodeKind::LVAR(offset), None, None);
-      } else {
-        let offset;
-        if args.lvars.lvars.len() == 0 {
-          offset = 8;
-        } else {
-          offset = args.lvars.lvars[args.lvars.lvars.len() - 1].offset + 8;
+      // function
+      if args.tokens.consume("(") {
+        let from = self.expr(args);
+        let mut to = from;
+        args.tokens.consume(",");
+        while !args.tokens.consume(")") {
+          to = self.expr(args);
+          args.tokens.consume(",");
         }
-        args.lvars.new_lvar(var_name, offset);
-        return self.new_node(NodeKind::LVAR(offset), None, None);
+        return self.new_node(NodeKind::FUNC(Func {
+          range: Range {
+            from,
+            to,
+          },
+          name: var_name,
+        }), None, None);
+      } else {
+      // var
+        args.tokens.idx -= 1;
+        let (is_exist, offset) = args.lvars.find_lvar(&mut args.tokens);
+        args.tokens.idx += 1;
+        if is_exist {
+          return self.new_node(NodeKind::LVAR(offset), None, None);
+        } else {
+          args.tokens.expect("=");
+          args.tokens.idx -= 1;
+
+          let offset;
+          if args.lvars.lvars.len() == 0 {
+            offset = 8;
+          } else {
+            offset = args.lvars.lvars[args.lvars.lvars.len() - 1].offset + 8;
+          }
+          args.lvars.new_lvar(var_name, offset);
+          return self.new_node(NodeKind::LVAR(offset), None, None);
+        }
       }
     }
 
