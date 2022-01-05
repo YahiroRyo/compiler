@@ -95,6 +95,12 @@ impl NodeArray {
         println!(".LendXXX:");
         return;
       },
+      NodeKind::BLOCK (from, to) => {
+        for index in from..to+1 {
+          self.gen(index);
+        }
+        return;
+      },
       NodeKind::ELSE => return,
       NodeKind::NONE => return,
       _ => ()

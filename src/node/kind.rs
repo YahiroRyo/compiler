@@ -17,4 +17,6 @@ pub enum NodeKind {
   RETURN,
   NUM(i64),
   LVAR(usize),
+  // from, to blockの範囲 idx
+  BLOCK(usize, usize),
 }

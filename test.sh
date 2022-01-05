@@ -79,4 +79,13 @@ assert 111 "
 foo = 0;
 for (i = 0; i < 111; i = i + 1) foo;
 "
+assert 55 "
+foo = 0;
+bar = 0;
+for (i = 0; i < 10; i = i + 1) {
+  bar = bar + 1;
+  foo = foo + bar;
+}
+foo;
+"
 echo OK

@@ -9,6 +9,7 @@ pub struct ParseArgs {
 }
 
 // stmt       = expr ";"
+//            | "{" stmt* "}"
 //            | "if" "(" expr ")" stmt ("else" stmt)?
 //            | "while" "(" expr ")" stmt
 //            | "for" "(" expr? ";" expr? ";" expr? ")" stmt
@@ -24,6 +25,15 @@ pub struct ParseArgs {
 impl NodeArray {
   pub fn stmt(&mut self, args: &mut ParseArgs) -> usize {
     let idx;
+
+    if args.tokens.consume("{") {
+      let from: usize = self.stmt(args);
+      let mut to: usize = from;
+      while !args.tokens.consume("}") {
+        to = self.stmt(args);
+      }
+      return self.new_node(NodeKind::BLOCK(from, to), None, None);
+    }
 
     if args.tokens.consume("if") {
       args.tokens.expect("(");
