@@ -31,24 +31,14 @@ fn main() {
 			nodes: Vec::new(),
 			idx: 0,
 		};
-		node.stmt(&mut parse_args);
+		node.func(&mut parse_args);
 		nodes.push(node);
 	}
 
 	println!(".intel_syntax noprefix");
 	println!(".globl main");
-	println!("main:");
-	println!("  push rbp");
-	println!("  mov rbp, rsp");
-	println!("  sub rsp, 208");
 
 	for mut node in nodes {
 		node.gen(node.nodes.len()-1, &mut cnt);
-
-		println!("  pop rax");
 	}
-	
-	println!("  mov rsp, rbp");
-	println!("  pop rbp");
-	println!("  ret");
 }

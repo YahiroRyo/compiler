@@ -52,6 +52,18 @@ impl TokenArray {
       }
     }
   }
+  pub fn expect_ident(&mut self) -> String {
+    match &self.tokens[self.idx] {
+      TokenKind::IDENT (s) => {
+        self.idx += 1;
+        s.clone()
+      },
+      _ => {
+        error_msg("定義してください。");
+        String::new()
+      }
+    }
+  }
   pub fn expect_number(&mut self) -> i64 {
     match *self.kind() {
       TokenKind::NUM (n) => {

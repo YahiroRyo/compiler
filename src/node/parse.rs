@@ -2,13 +2,14 @@ use crate::node::kind::NodeKind;
 use crate::lvar::lvar::LVarArray;
 use crate::node::node::{NodeArray};
 use crate::token::token::TokenArray;
-use crate::node::kind::{Func, Range};
+use crate::node::kind::{Call, Func, Range};
 
 pub struct ParseArgs {
   pub tokens: TokenArray,
   pub lvars: LVarArray,
 }
 
+// func      = ident "("  ")" "{" stmt* "}"
 // stmt       = expr ";"
 //            | "{" stmt* "}"
 //            | "if" "(" expr ")" stmt ("else" stmt)?
@@ -24,12 +25,42 @@ pub struct ParseArgs {
 // unary      = ("+" | "-")? primary
 // primary    = num
 //            | ident ("(" expr?* ")")?
+//            | ident ("(" expr?* ")") "{" stmt* "}""
 //            | "(" expr ")"
 impl NodeArray {
-  pub fn stmt(&mut self, args: &mut ParseArgs) -> usize {
+  pub fn func(&mut self, args: &mut ParseArgs) -> usize {
+    let mut func_name = args.tokens.expect_ident();
+    args.tokens.expect("(");
+    args.tokens.expect(")");
+    args.tokens.expect("{");
+    if args.tokens.consume("}") {
+      if func_name != "main" {
+        func_name = String::from("_______________________________________NONE");
+      }
+      return self.new_node(NodeKind::FUNC(Func {
+        gens: Vec::new(),
+        name: func_name,
+      }), None, None)
+    }
+    let mut gens: Vec<usize> = Vec::new();
+    while !args.tokens.consume("}") {
+      gens.push(self.stmt(args));
+    }
+    return self.new_node(NodeKind::FUNC(Func {
+      gens: gens,
+      name: func_name
+    }), None, None);
+  }
+  fn stmt(&mut self, args: &mut ParseArgs) -> usize {
     let idx;
 
     if args.tokens.consume("{") {
+      if args.tokens.consume("}") {
+        return self.new_node(NodeKind::BLOCK(Range{
+          from: 0,
+          to: 0
+        }), None, None);
+      }
       let from: usize = self.stmt(args);
       let mut to: usize = from;
       while !args.tokens.consume("}") {
@@ -199,6 +230,15 @@ impl NodeArray {
     if is_var {
       // function
       if args.tokens.consume("(") {
+        if args.tokens.consume(")") {
+          return self.new_node(NodeKind::CALL(Call {
+            range: Range {
+              from: 0,
+              to: 0,
+            },
+            name: format!("{}", var_name),
+          }), None, None);
+        }
         let from = self.expr(args);
         let mut to = from;
         args.tokens.consume(",");
@@ -206,12 +246,12 @@ impl NodeArray {
           to = self.expr(args);
           args.tokens.consume(",");
         }
-        return self.new_node(NodeKind::FUNC(Func {
+        return self.new_node(NodeKind::CALL(Call {
           range: Range {
             from,
             to,
           },
-          name: var_name,
+          name: format!("{}", var_name),
         }), None, None);
       } else {
       // var

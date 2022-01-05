@@ -4,8 +4,13 @@ pub struct Range {
   pub to: usize,
 }
 #[derive(Clone)]
-pub struct Func {
+pub struct Call {
   pub range: Range,
+  pub name: String,
+}
+#[derive(Clone)]
+pub struct Func {
+  pub gens: Vec<usize>,
   pub name: String,
 }
 
@@ -28,6 +33,7 @@ pub enum NodeKind {
   RETURN,
   NUM(i64),
   LVAR(usize),
+  CALL(Call),
   FUNC(Func),
   BLOCK(Range),
 }

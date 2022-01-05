@@ -17,79 +17,73 @@ assert() {
   fi
 }
 
-assert 0 "0;"
-assert 42 "42;"
-assert 44 "42+2;"
-assert 40 "42-2;"
-assert 22 "11 * 2;" 
-assert 11 "(11 * 2) / 2;" 
-assert 31 "((11 * 2) / 2) + 20;" 
-assert 42 "11 - -31;" 
-assert 20 "51 + -31;" 
-assert 0 "1 > 1;"
-assert 1 "1 >= 1;"
-assert 0 "1 < 1;"
-assert 1 "1 <= 1;"
-assert 1 "1 == 1;"
-assert 0 "1 != 1;"
-assert 5 "a = 5; a;"
-assert 20 "
+assert 0 "main() { return 0; }"
+assert 42 "main() { return 42; }"
+assert 44 "main() { return 42+2; }"
+assert 40 "main() { return 42-2; }"
+assert 22 "main() { return 11 * 2; }" 
+assert 11 "main() { return (11 * 2) / 2; }" 
+assert 31 "main() { return ((11 * 2) / 2) + 20; }" 
+assert 42 "main() { return 11 - -31; }" 
+assert 20 "main() { return 51 + -31; }" 
+assert 0 "main() { return 1 > 1; }"
+assert 1 "main() { return 1 >= 1; }"
+assert 0 "main() { return 1 < 1; }"
+assert 1 "main() { return 1 <= 1; }"
+assert 1 "main() { return 1 == 1; }"
+assert 0 "main() { return 1 != 1; }"
+assert 5 "main() { a = 5; return a; }"
+assert 20 "main() {
 aa = 5;
 bbb = 15;
-aa + bbb;
-"
-assert 20 "
+return aa + bbb;
+}"
+assert 20 "main() {
 aa111 = 5;
 bbb = 15;
-aa111 + bbb;
-"
+return aa111 + bbb;
+}"
 
-assert 5 "
+assert 5 "main() {
 a = 2;
 b = 3;
 return a + b;
-"
+}"
 
-assert 10 "
+assert 10 "main() {
 a = 10;
-if (a == 10) a;
-"
+if (a == 10) return a;
+return 0;
+}"
 
-assert 10 "
+assert 10 "main() {
 a = 10;
 b = 2;
-if (a == 10) a;
-else b;
-"
-assert 2 "
+if (a == 10) return a;
+else return b;
+}"
+assert 2 "main() {
 a = 10;
 b = 2;
-if (a != 10) a;
-else b;
-"
-assert 10 "
+if (a != 10) return a;
+else return b;
+}"
+assert 10 "main() {
 a = 0;
 while (a != 10) a = a + 1;
-a;
-"
-assert 9 "
-for (i = 0; i < 9; i = i + 1) i;
-"
-assert 111 "
-foo = 0;
-for (i = 0; i < 111; i = i + 1) foo;
-"
-assert 55 "
+return a;
+}"
+assert 55 "main() {
 foo = 0;
 bar = 0;
 for (i = 0; i < 10; i = i + 1) {
   bar = bar + 1;
   foo = foo + bar;
 }
-foo;
-"
+return foo;
+}"
 
-assert 15 "
+assert 15 "main() {
 foo = 0;
 while (foo <= 10) {
   foo = foo + 1;
@@ -97,7 +91,6 @@ while (foo <= 10) {
     foo = 15;
   }
 }
-foo;
-"
-assert 1 "a(1);"
+return foo;
+}"
 echo OK

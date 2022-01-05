@@ -111,34 +111,52 @@ impl NodeArray {
         return;
       },
       NodeKind::BLOCK (r) => {
+        if r.from == 0 { return; }
         for index in r.from..r.to+1 {
           self.gen(index, cnt);
         }
         return;
       },
-      NodeKind::FUNC (f) => {
+      NodeKind::CALL (c) => {
         *cnt += 1;
         let tmp_cnt = cnt.clone();
-        for index in f.range.from..f.range.to+1 {
-          self.gen(index, cnt);
-        }
-        for index in 0..f.range.to - f.range.from + 1 {
-          println!("  pop {}", FUNC_ARG_REGISTERS[index]);
+        if c.range.from != 0 {
+          for index in c.range.from..c.range.to+1 {
+            self.gen(index, cnt);
+          }
+          for index in 0..c.range.to - c.range.from + 1 {
+            println!("  pop {}", FUNC_ARG_REGISTERS[index]);
+          }
         }
         println!("  mov rax, rsp");
         println!("  and rax, 15");
         println!("  jnz .Lcall{}", tmp_cnt);
         println!("  mov rax, 0");
-        println!("  call {}", f.name);
+        println!("  call {}", c.name);
         println!("  jmp .Lend{}", tmp_cnt);
         println!(".Lcall{}:", tmp_cnt);
         println!("  sub rsp, 8");
         println!("  mov rax, 0");
-        println!("  call {}", f.name);
+        println!("  call {}", c.name);
         println!("  add rsp, 8");
-        println!(".Lend{}", tmp_cnt);
+        println!(".Lend{}:", tmp_cnt);
+        // 関数に戻り値がある場合は、push raxしたい
+        // println!("  push rax");
         return;
       }
+      NodeKind::FUNC (f) => {
+        println!("{}:", f.name);
+        println!("  push rbp");
+        println!("  mov rbp, rsp");
+        println!("  sub rsp, 208");
+        for index in f.gens {
+          self.gen(index, cnt);
+        }
+        println!("  mov rsp, rbp");
+        println!("  pop rbp");
+        println!("  ret");
+        return;
+      },
       NodeKind::ELSE => return,
       NodeKind::NONE => return,
       _ => ()
