@@ -121,4 +121,21 @@ main() {
   }
 }
 " true
+assert 22 "
+test(num) {
+  print(num);
+}
+main() {
+  test(22);
+}
+" true
+assert 15 "
+test(num, num2) {
+  print(num);
+  print(num2);
+}
+main() {
+  test(1,5);
+}
+" true
 echo OK

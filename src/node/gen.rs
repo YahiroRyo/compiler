@@ -121,7 +121,7 @@ impl NodeArray {
         *cnt += 1;
         let tmp_cnt = cnt.clone();
         if c.range.from != None {
-          for index in c.range.from.unwrap()..c.range.to.unwrap()+1 {
+          for index in (c.range.from.unwrap()..c.range.to.unwrap()+1).rev() {
             self.gen(index, cnt);
           }
           for index in 0..c.range.to.unwrap() - c.range.from.unwrap() + 1 {
@@ -149,6 +149,13 @@ impl NodeArray {
         println!("  push rbp");
         println!("  mov rbp, rsp");
         println!("  sub rsp, 208");
+        if f.range.from != None {
+          for i in f.range.from.unwrap()..f.range.to.unwrap() + 1 {
+            self.gen_lval(i);
+            println!("  pop rax");
+            println!("  mov [rax], {}", FUNC_ARG_REGISTERS[i - f.range.from.unwrap()]);
+          }
+        }
         for index in f.gens {
           self.gen(index, cnt);
         }

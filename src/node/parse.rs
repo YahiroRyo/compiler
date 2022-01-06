@@ -31,8 +31,22 @@ impl NodeArray {
   pub fn func(&mut self, args: &mut ParseArgs) -> usize {
     let mut func_name = args.tokens.expect_ident();
     args.tokens.expect("(");
-    args.tokens.expect(")");
+    let mut from: Option<usize> = None;
+    let mut to: Option<usize> = None;
+    // 引数ありの場合
+    if !args.tokens.consume(")") {
+      from = Some(self.expr(args));
+      to = from;
+      loop {
+        if !args.tokens.consume(",") {
+          break;
+        }
+        to = Some(self.expr(args));
+      }
+      args.tokens.expect(")");
+    }
     args.tokens.expect("{");
+    // ブロック内が存在しない場合
     if args.tokens.consume("}") {
       if func_name != "main" {
         func_name = String::from("_______________________________________NONE");
@@ -40,15 +54,24 @@ impl NodeArray {
       return self.new_node(NodeKind::FUNC(Func {
         gens: Vec::new(),
         name: func_name,
+        range: Range {
+          from,
+          to,
+        }
       }), None, None)
     }
+    // ブロック内が存在した場合
     let mut gens: Vec<usize> = Vec::new();
     while !args.tokens.consume("}") {
       gens.push(self.stmt(args));
     }
     return self.new_node(NodeKind::FUNC(Func {
       gens: gens,
-      name: func_name
+      name: func_name,
+      range: Range {
+        from,
+        to,
+      }
     }), None, None);
   }
   fn stmt(&mut self, args: &mut ParseArgs) -> usize {
@@ -261,9 +284,6 @@ impl NodeArray {
         if is_exist {
           return self.new_node(NodeKind::LVAR(offset), None, None);
         } else {
-          args.tokens.expect("=");
-          args.tokens.idx -= 1;
-
           let offset;
           if args.lvars.lvars.len() == 0 {
             offset = 8;

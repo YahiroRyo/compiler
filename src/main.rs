@@ -34,6 +34,9 @@ fn main() {
 			idx: 0,
 		};
 		node.func(&mut parse_args);
+		parse_args.lvars = LVarArray {
+			lvars: Vec::new()
+		};
 		nodes.push(node);
 	}
 

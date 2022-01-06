@@ -12,6 +12,7 @@ pub struct Call {
 pub struct Func {
   pub gens: Vec<usize>,
   pub name: String,
+  pub range: Range,
 }
 
 #[derive(Clone)]
